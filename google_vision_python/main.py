@@ -140,9 +140,7 @@ def delete_files_from_directory(directory):
 
 def download_from_bucket(bucket_name, file_name, project_id, bucket_credentials, source_file_path):
 
-    #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = constants.bucket_key
-    #storage_client = storage.Client()
-    storage_client = storage.Client(credentials=bucket_credentials) #project=project_id 
+    storage_client = storage.Client(credentials=bucket_credentials)
     local_file_path = BASE_TEMP_DIR + file_name
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.get_blob(source_file_path)
@@ -169,7 +167,7 @@ def upload_to_bucket(json_data, file_name, source_path, bucket_name, project_id,
     file_name_json_format = file_name_without_extension + '.json'
     remote_json_file_path = source_path + '/'  + file_name_json_format
 
-    storage_client = storage.Client(credentials=bucket_credentials) #project=project_id #credentials=bucket_credentials
+    storage_client = storage.Client(credentials=bucket_credentials)
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(remote_json_file_path)
     blob.upload_from_string(json_data, content_type='application/json')
