@@ -14,6 +14,7 @@ BASE_TEMP_DIR = "/tmp/"
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = constants.google_vision_api_key_path
 
+
 def store_output_to_bucket(event, context):
 
     try:
@@ -49,6 +50,7 @@ def store_output_to_bucket(event, context):
         if data.get('response'):
             topic_name = data.get('response').get('topic')
 
+    
         bucket_credentials = google.oauth2.credentials.Credentials(bucket_access_token)
 
         source_file_path = str(source_path) + '/' + str(file_name)
@@ -162,7 +164,6 @@ def run_vision_api_on_image(image_data):
 
 def upload_to_bucket(json_data, file_name, source_path, bucket_name, project_id, bucket_credentials):
     
-    #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = constants.bucket_key
     file_name_without_extension = os.path.splitext(file_name)[0]
     file_name_json_format = file_name_without_extension + '.json'
     remote_json_file_path = source_path + '/'  + file_name_json_format
