@@ -14,10 +14,12 @@ BASE_TEMP_DIR = "/tmp/"
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = constants.google_vision_api_key_path
 
+
 def store_output_to_bucket(event, context):
 
     try:
         pubsub_data_string = event['data']
+        print(pubsub_data_string)
         pubsub_message = base64.b64decode(pubsub_data_string).decode('utf-8')
         data = json.loads(pubsub_message, strict=False)
 
@@ -48,6 +50,7 @@ def store_output_to_bucket(event, context):
         if data.get('response'):
             topic_name = data.get('response').get('topic')
 
+    
         bucket_credentials = google.oauth2.credentials.Credentials(bucket_access_token)
 
         source_file_path = str(source_path) + '/' + str(file_name)
@@ -75,15 +78,16 @@ def store_output_to_bucket(event, context):
 
             print(pubsub_object)
             print("Publishing custom pub-sub object to topic")
-            publish_to_pubsub_topic(constants.pubsub_project_id, topic_name, pubsub_object)
+            publish_to_pubsub_topic(constants.pubsub_project_id, project_id, topic_name, pubsub_object)
 
             print("Deleting files from temporary directory")
             delete_files_from_directory(BASE_TEMP_DIR)
 
-            print('testing the response...')
-            return (constants.success_response, constants.success_status_code)
+            print('success response...')
+            return (constants.success_response, constants.success_status_code)      
+
     except Exception as e:
-        print(str(e))
+        logging.error(str(e))
         pubsub_object = create_pubsub_object(uuid, variant_id, destination_path, file_name,
                                              constants.failure_response)
         publish_to_pubsub_topic(constants.pubsub_project_id, topic_name, pubsub_object)
@@ -104,7 +108,7 @@ def create_pubsub_object(uuid, variant_id, file_path, file_name, status):
     return response_object
 
 
-def publish_to_pubsub_topic(project_id, topic_name, data):
+def publish_to_pubsub_topic(project_id, project_id_from_request, topic_name, data):
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = constants.pubsub_key
     publisher = pubsub_v1.PublisherClient()
     print(f'Publishing message to topic {topic_name}')
@@ -118,15 +122,16 @@ def publish_to_pubsub_topic(project_id, topic_name, data):
     print('message encoded')
 
     attributes = {
-        'projectId': str(project_id)
+        'projectId': str(project_id_from_request)
     }
+    print('project_id  ', project_id_from_request)
 
     try:
         publish_future = publisher.publish(topic_path, data=message_bytes, **attributes)
         publish_future.result()
         print('Message published.')
     except Exception as e:
-        logging.error(e)
+        print(e)
         return (e, constants.internal_server_error_code)
 
 
