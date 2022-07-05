@@ -73,7 +73,7 @@ def store_output_to_bucket(event, context):
             destination_file_path = str(destination_path + '/' + file_name_json_format)
 
             print("Uploading vision api response to bucket")
-            upload_to_bucket(vision_api_json_response, file_name, destination_file_path, destination_bucket_name, project_id,
+            upload_to_bucket(vision_api_json_response, file_name, destination_path, destination_bucket_name, project_id,
                              destination_bucket_credentials)
 
             print("Checking if the json file is uploaded or not")
@@ -189,6 +189,3 @@ def check_if_file_exists(bucket_credentials, bucket_name, cloud_bucket_file_path
     else:
         print(f'File does not exist')
         raise Exception("File does not exist")
-
-
-
