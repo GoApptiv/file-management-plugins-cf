@@ -55,7 +55,6 @@ def store_output_to_bucket(event, context):
         destination_bucket_credentials = google.oauth2.credentials.Credentials(destination_bucket_access_token)
 
         source_file_path = str(source_path) + '/' + str(file_name)
-        destination_file_path = str(destination_path + '/' + str(file_name))
 
         print("Downloading file from bucket")
         file_details = download_from_bucket(source_bucket_name, file_name, project_id, source_bucket_credentiatials, source_file_path)
@@ -71,6 +70,7 @@ def store_output_to_bucket(event, context):
 
             file_name_without_extension = os.path.splitext(file_name)[0]
             file_name_json_format = str(file_name_without_extension) + '.json'
+            destination_file_path = str(destination_path + '/' + file_name_json_format)
 
             print("Uploading vision api response to bucket")
             upload_to_bucket(vision_api_json_response, file_name, destination_file_path, destination_bucket_name, project_id,
